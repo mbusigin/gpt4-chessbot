@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Add any custom CSS classes or styles below this line */
+.chessboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.chessboard-container {
+  max-width: 95vw;
+  min-width: 300px;
+  max-height: 95vh;
+}

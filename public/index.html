@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chess with GPT-4</title>
+  <link rel="stylesheet" href="./css/main.css" />
+</head>
+
+<body>
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row justify-center items-center min-h-screen">
+      <div class="game-options">
+        <label for="side-selection">Choose side:</label>
+        <select id="side-selection">
+          <option value="white" selected>White</option>
+          <option value="black">Black</option>
+        </select>
+        <label for="ai-difficulty">AI Difficulty:</label>
+        <select id="ai-difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+        <button id="new-game-btn">New Game</button>
+      </div>
+      <div class="chessboard-wrapper">
+        <div class="chessboard-container"></div>
+      </div>
+      <div class="chain-of-thought-container">
+        <h2 class="text-lg md:text-xl lg:text-2xl">AI Chain-of-Thought</h2>
+        <div id="chain-of-thought"></div>
+      </div>
+      <script type="module" src="./js/app.js"></script>
+    </div>
+  </div>
+</body>
+
+</html>

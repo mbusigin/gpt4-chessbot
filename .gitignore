@@ -1,0 +1,26 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables and configuration
+.env
+.env.local
+
+# System files and caches
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Editor configuration and cache files
+.vscode/
+.idea/
+
+# macOS specific directories
+__MACOSX/
+
+# Additional temporary files
+*~
+*.swp
