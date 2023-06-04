@@ -16,14 +16,14 @@ const config = {
 
 const chessboard = new Chessboard(document.querySelector('.chessboard-container'), config);
 
-const sendPositionAndGetMove = async (currentPosition) => {
+const sendPositionAndGetMove = async (currentPosition, difficulty) => { // Line 19: Add the 'difficulty' parameter
   try {
     const response = await fetch('/api/chess/move', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ position: currentPosition, difficulty }),
+      body: JSON.stringify({ position: currentPosition, difficulty: difficulty }), // Line 26: After
     });
 
     if (response.ok) {
@@ -171,4 +171,19 @@ const resetGame = () => {
   document.getElementById('chain-of-thought').innerText = '';
 
   // Update any other necessary UI elements (e.g., game status and turn indicator)
+};
+
+const onSideSelectionChange = (selectElement) => {
+  const selectedSide = selectElement.value;
+
+  // Update the chessboard orientation
+  chessboard.setOrientation(selectedSide);
+
+  // Reset the game state and update the UI elements
+  resetGame();
+
+  if (selectedSide === 'black') {
+    // If the user chooses to play as black, start the AI move for white
+    sendPositionAndGetMove(chess.fen(), aiDifficulty.value);
+  }
 };
