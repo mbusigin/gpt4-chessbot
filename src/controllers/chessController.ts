@@ -12,7 +12,6 @@ const gpt4Api = new ChatGPTAPI({
   },
 });
 
-// Function to interact with GPT-4 and receive suggestions based on the current position
 const makeMove = async (currentPosition: string): Promise<string> => {
   try {
     const inputMessage = `Current chess position (FEN): ${currentPosition}. What is the best move for the AI player and why?`;
@@ -21,7 +20,17 @@ const makeMove = async (currentPosition: string): Promise<string> => {
     // Extract the best move and the chain-of-thought from the response
     // It depends on the response format of GPT-4, you might need additional parsing
     const bestMove = response.text.split(',')[0]; // assume the best move is the first part of the response text
-    return bestMove;
+
+    // Check for pawn promotion
+    const promotionRegex = /([a-h][18])([qrbn])/;
+    const promotionMatch = bestMove.match(promotionRegex);
+    if (promotionMatch) {
+      const move = promotionMatch[1]; // the move without promotion piece
+      const promotionPiece = promotionMatch[2]; // the promotion piece
+      return { move, promotionPiece };
+    }
+
+    return { move: bestMove };
   } catch (error) {
     console.error(`Error communicating with GPT-4: ${error}`);
     throw new Error('Error generating AI move');
@@ -30,12 +39,25 @@ const makeMove = async (currentPosition: string): Promise<string> => {
 
 export const getMove = async (req: Request, res: Response): Promise<void> => {
   const currentPosition = req.body.position;
+  const difficulty = req.body.difficulty;
   const chess = new Chess(currentPosition);
 
   try {
-    const move = await makeMove(currentPosition);
+    const move = await makeMove(currentPosition, difficulty); // Pass the difficulty level to makeMove function
 
-    const moveResult = chess.move(move);
+    // ...
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred while generating the move" });
+  }
+};
+export const getMove = async (req: Request, res: Response): Promise<void> => {
+  const currentPosition = req.body.position;
+  const chess = new Chess(currentPosition);
+
+  try {
+    const { move, promotionPiece } = await makeMove(currentPosition);
+
+    const moveResult = chess.move(move, { promotion: promotionPiece });
 
     // Validate AI move
     if (moveResult === null) {

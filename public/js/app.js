@@ -30,9 +30,9 @@ const sendPositionAndGetMove = async (currentPosition) => {
       const data = await response.json();
       const aiMove = data.move;
       const chainOfThought = data.chainOfThought;
-  
+
       chessboard.move(aiMove);
-  
+
       // Update the chain-of-thought display
       document.getElementById('chain-of-thought').innerText = chainOfThought;
     } else {
@@ -54,13 +54,16 @@ chessboard.setOnMove(async (from, to) => {
     return;
   }
 
+  handleUserPawnPromotion(moveResult);
+  
   const currentPosition = chess.fen();
   const aiMove = await sendPositionAndGetMove(currentPosition);
   if (aiMove) {
     chessboard.move(aiMove);
   }
-});
 
+  updateTurnIndicatorAndGameStatus();
+});
 
 const sideSelection = document.getElementById('side-selection');
 const aiDifficulty = document.getElementById('ai-difficulty');
@@ -83,9 +86,69 @@ newGameButton.addEventListener('click', () => {
 
   // Reset the cm-chessboard to the initial position
   chessboard.setPosition('start');
-  
+
   // Reset the chain-of-thought display
   document.getElementById('chain-of-thought').innerText = '';
 
   // Update any other necessary UI elements (e.g., game status and turn indicator)
 });
+
+sideSelection.addEventListener('change', (event) => {
+  const selectedSide = event.target.value;
+
+  // Update the chessboard orientation
+  chessboard.setOrientation(selectedSide);
+
+  if (selectedSide === 'black') {
+    // If the user chooses to play as black, start the AI move for white
+    sendPositionAndGetMove(chess.fen());
+  }
+});
+
+aiDifficulty.addEventListener('change', (event) => {
+  const selectedDifficulty = event.target.value;
+  // TODO: Actually do something with this.
+  // Modify the GPT-4 API requests based on the selected AI difficulty
+  // Replace this with actual API configuration when available
+  /* 
+  Example:
+
+  gpt4Api.setCompletionParams({
+    ...gpt4Api.getCompletionParams(),
+    temperature: selectedDifficulty === 'easy' ? 0.8 : selectedDifficulty === 'medium' ? 0.5 : 0.2,
+  });
+  */
+});
+
+const updateTurnIndicatorAndGameStatus = () => {
+  const turnIndicator = document.getElementById('turn-indicator');
+  const gameStatus = document.getElementById('game-status');
+  const turn = chess.turn() === 'w' ? "White" : "Black";
+  const gameStatusText = chess.in_checkmate() ? 'Checkmate'
+    : chess.in_stalemate() ? 'Stalemate'
+      : chess.in_draw() ? 'Draw'
+        : chess.in_check() ? 'Check'
+          : '';
+
+  turnIndicator.innerText = `${turn}'s turn`;
+  gameStatus.innerText = gameStatusText;
+};
+
+const handleUserPawnPromotion = (moveResult) => {
+  if (moveResult.flags.includes('p')) {
+    // Pawn promotion occurred
+    const promotionPiece = prompt('Choose a promotion piece (q/r/b/n):').toLowerCase();
+    if (['q', 'r', 'b', 'n'].includes(promotionPiece)) {
+      chess.undo(); // Undo the promotion move
+      const move = { from: moveResult.from, to: moveResult.to, promotion: promotionPiece };
+      chess.move(move); // Redo the move with the selected promotion piece
+      // Update the chessboard with the new promotion piece
+      chessboard.setPosition(chess.fen(), false);
+    } else {
+      // Invalid promotion piece selection; revert the move and notify the user
+      chess.undo();
+      chessboard.setPosition(chess.fen(), false);
+      alert('Invalid promotion piece selected; please try the move again.');
+    }
+  }
+};

@@ -1,0 +1,34 @@
+The GPT-4 Chessbot application is a web-based chess game where users can play chess against an AI powered by GPT-4. The application's primary focus is to showcase GPT-4's strategic thinking ability in the game of chess, while also visualizing the chain-of-thought behind the AI's moves. The backend is built using Node.js, Express.js, and TypeScript, while the frontend utilizes cm-chessboard for the chessboard display and TailwindCSS for styling and responsiveness.
+
+Here's a detailed specification of the application's features and functionalities:
+
+1. **Chessboard**: The application displays an interactive chessboard on which users can make moves and see the AI player's moves. 
+   - The cm-chessboard library is used for rendering and interaction with the chessboard.
+   - Moves are visually represented on the board, allowing users to follow the game progress.
+   
+2. **User side selection**: Users can choose to play as either white or black.
+   - The selection is made before starting a game.
+   - The AI automatically plays as the opposing side.
+
+3. **AI difficulty**: Users can select the AI difficulty level, which impacts the AI's decision-making strength in the game.
+   - Difficulty levels could include easy, medium, and hard.
+   - The difficulty setting affects the API calls to GPT-4 and the parameters used in request (such as temperature).
+
+4. **Turn-based gameplay**: Users and the AI player take turns moving their pieces according to standard chess rules.
+   - Moves are validated using a chess library (e.g., chess.js).
+   - Game rules like check, checkmate, stalemate, and draw are enforced using the chess library.
+
+5. **GPT-4 AI integration**: GPT-4 is integrated to provide strategic move suggestions for the AI player.
+   - API calls are made to GPT-4, sending the current chess position and receiving move suggestions along with the chain-of-thought.
+  
+6. **Chain-of-thought visualization**: Visualize and display GPT-4's chain-of-thought or reasoning behind its moves in real-time.
+   - Updated after each AI move.
+   - Presented as plain text, a list, or a visualized thought process tree.
+
+7. **Responsive design**: The application's interface scales properly, providing a pleasant user experience on different devices and screen sizes.
+
+8. **Game flow and interaction enhancements**: Provides additional features like a "New Game" button, turn indicator, and game status display.
+
+9. **Promotions**: Handle pawn promotions for both user and AI player, allowing users to select promotion pieces when their pawn reaches the opposite end of the board. Similarly, handles AI pawn promotions.
+
+By meeting these specifications, the GPT-4 Chessbot application aims to provide users with an engaging, challenging, and enjoyable chess gaming experience, while showcasing the strategic thinking capabilities of GPT-4 and allowing users to observe the AI's decision-making process.

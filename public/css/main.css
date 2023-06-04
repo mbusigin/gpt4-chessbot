@@ -16,3 +16,11 @@
   min-width: 300px;
   max-height: 95vh;
 }
+
+.turn-indicator {
+  font-weight: bold;
+}
+
+.game-status {
+  color: red;
+}
