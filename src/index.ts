@@ -10,6 +10,10 @@ app.use(express.json()); // For parsing JSON request bodies
 // Serve static files from the public folder
 app.use(express.static('public'));
 
+// Serve static files from node_modules
+// TODO: FIXME! This is a security risk, as it allows serving any file from node_modules
+app.use('/node_modules', express.static('node_modules'));
+
 // Use the chessRoutes for all routes related to chess moves and game interaction
 app.use('/api/chess', chessRoutes);
 

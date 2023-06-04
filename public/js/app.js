@@ -1,19 +1,19 @@
 // Import the necessary cm-chessboard npm package
 import { Chessboard } from 'cm-chessboard';
-import Chess from 'chess.js';
+import { Chess } from 'chess.js';
 const chess = new Chess();
 
 
 // Initialize the cm-chessboard
 const config = {
-  position: 'start',
+  // position: 'start',
   sprite: {
-    url: './path/to/cm-chessboard-sprite.svg',
+    url: '/node_modules/cm-chessboard/assets/pieces/standard.svg',
   },
   responsive: true,
   animationDuration: 300,
+  position: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 };
-
 const chessboard = new Chessboard(document.querySelector('.chessboard-container'), config);
 
 const sendPositionAndGetMove = async (currentPosition, difficulty) => { // Line 19: Add the 'difficulty' parameter
@@ -43,9 +43,12 @@ const sendPositionAndGetMove = async (currentPosition, difficulty) => { // Line 
   }
 };
 
-// Example of how to handle user moves and update the cm-chessboard
-chessboard.setOnMove(async (from, to) => {
+// New inputHandler function
+function inputHandler(event) {
+  const from = event.squareFrom;
+  const to = event.squareTo;
   const userMove = { from, to };
+
   const moveResult = chess.move(userMove);
 
   // Validate user move
@@ -54,16 +57,42 @@ chessboard.setOnMove(async (from, to) => {
     return;
   }
 
-  handleUserPawnPromotion(moveResult);
-
   const currentPosition = chess.fen();
-  const aiMove = await sendPositionAndGetMove(currentPosition);
-  if (aiMove) {
-    chessboard.move(aiMove);
-  }
+  sendPositionAndGetMove(currentPosition, aiDifficulty.value)
+    .then((aiMove) => {
+      chessboard.move(aiMove);
+      updateTurnIndicatorAndGameStatus();
+    })
+    .catch((error) => {
+      console.error('Error while fetching AI move:', error);
+    });
+}
 
-  updateTurnIndicatorAndGameStatus();
-});
+// Enable move input on the chessboard
+chessboard.enableMoveInput(inputHandler, 'white');
+
+
+// // Example of how to handle user moves and update the cm-chessboard
+// chessboard.setOnMove(async (from, to) => {
+//   const userMove = { from, to };
+//   const moveResult = chess.move(userMove);
+
+//   // Validate user move
+//   if (moveResult === null) {
+//     console.log('Invalid move');
+//     return;
+//   }
+
+//   handleUserPawnPromotion(moveResult);
+
+//   const currentPosition = chess.fen();
+//   const aiMove = await sendPositionAndGetMove(currentPosition);
+//   if (aiMove) {
+//     chessboard.move(aiMove);
+//   }
+
+//   updateTurnIndicatorAndGameStatus();
+// });
 
 const sideSelection = document.getElementById('side-selection');
 const aiDifficulty = document.getElementById('ai-difficulty');
@@ -85,8 +114,7 @@ newGameButton.addEventListener('click', () => {
   chess.reset();
 
   // Reset the cm-chessboard to the initial position
-  chessboard.setPosition('start');
-
+  chessboard.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
   // Reset the chain-of-thought display
   document.getElementById('chain-of-thought').innerText = '';
 
@@ -165,8 +193,7 @@ const resetGame = () => {
   chess.reset();
 
   // Reset the cm-chessboard to the initial position
-  chessboard.setPosition('start');
-
+  chessboard.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
   // Reset the chain-of-thought display
   document.getElementById('chain-of-thought').innerText = '';
 
