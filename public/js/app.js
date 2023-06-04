@@ -23,7 +23,7 @@ const sendPositionAndGetMove = async (currentPosition) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ position: currentPosition }),
+      body: JSON.stringify({ position: currentPosition, difficulty }),
     });
 
     if (response.ok) {
@@ -55,7 +55,7 @@ chessboard.setOnMove(async (from, to) => {
   }
 
   handleUserPawnPromotion(moveResult);
-  
+
   const currentPosition = chess.fen();
   const aiMove = await sendPositionAndGetMove(currentPosition);
   if (aiMove) {
@@ -99,26 +99,32 @@ sideSelection.addEventListener('change', (event) => {
   // Update the chessboard orientation
   chessboard.setOrientation(selectedSide);
 
+  // Reset the game state and update the UI elements
+  resetGame();
+
   if (selectedSide === 'black') {
     // If the user chooses to play as black, start the AI move for white
-    sendPositionAndGetMove(chess.fen());
+    sendPositionAndGetMove(chess.fen(), aiDifficulty.value);
   }
 });
 
+
 aiDifficulty.addEventListener('change', (event) => {
   const selectedDifficulty = event.target.value;
-  // TODO: Actually do something with this.
-  // Modify the GPT-4 API requests based on the selected AI difficulty
-  // Replace this with actual API configuration when available
-  /* 
-  Example:
-
-  gpt4Api.setCompletionParams({
-    ...gpt4Api.getCompletionParams(),
-    temperature: selectedDifficulty === 'easy' ? 0.8 : selectedDifficulty === 'medium' ? 0.5 : 0.2,
-  });
-  */
+  updateAIDifficulty(selectedDifficulty);
 });
+
+const updateAIDifficulty = (selectedDifficulty) => {
+  // TODO: Update the GPT-4 API configuration based on the selected AI difficulty
+  // Since GPT-4 API is not available yet, replace it with the actual API configuration when it's ready
+  // Just an example, this can change based on the actual GPT-4 API documentation
+  const temperature = selectedDifficulty === 'easy' ? 0.8 : selectedDifficulty === 'medium' ? 0.5 : 0.2;
+
+  // gpt4Api.setCompletionParams({
+  //   ...gpt4Api.getCompletionParams(),
+  //   temperature,
+  // });
+};
 
 const updateTurnIndicatorAndGameStatus = () => {
   const turnIndicator = document.getElementById('turn-indicator');
@@ -151,4 +157,18 @@ const handleUserPawnPromotion = (moveResult) => {
       alert('Invalid promotion piece selected; please try the move again.');
     }
   }
+};
+
+
+const resetGame = () => {
+  // Reset the internal chess instance
+  chess.reset();
+
+  // Reset the cm-chessboard to the initial position
+  chessboard.setPosition('start');
+
+  // Reset the chain-of-thought display
+  document.getElementById('chain-of-thought').innerText = '';
+
+  // Update any other necessary UI elements (e.g., game status and turn indicator)
 };

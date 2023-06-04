@@ -12,8 +12,11 @@ const gpt4Api = new ChatGPTAPI({
   },
 });
 
-const makeMove = async (currentPosition: string): Promise<string> => {
+const makeMove = async (currentPosition: string, difficulty: string): Promise<{ move: string; chainOfThought: string }> => {
   try {
+    // Set GPT-4 API parameters according to the provided difficulty parameter
+    const temperature = difficulty === 'easy' ? 0.8 : difficulty === 'medium' ? 0.5 : 0.2;
+
     const inputMessage = `Current chess position (FEN): ${currentPosition}. What is the best move for the AI player and why?`;
     const response = await gpt4Api.sendMessage(inputMessage);
 
@@ -30,7 +33,11 @@ const makeMove = async (currentPosition: string): Promise<string> => {
       return { move, promotionPiece };
     }
 
-    return { move: bestMove };
+    // Extract the best move and the chain-of-thought from the response
+    // It depends on the response format of GPT-4, you might need additional parsing
+    const chainOfThought = response.text.slice(1);
+
+    return { move: bestMove, chainOfThought };
   } catch (error) {
     console.error(`Error communicating with GPT-4: ${error}`);
     throw new Error('Error generating AI move');
@@ -43,19 +50,7 @@ export const getMove = async (req: Request, res: Response): Promise<void> => {
   const chess = new Chess(currentPosition);
 
   try {
-    const move = await makeMove(currentPosition, difficulty); // Pass the difficulty level to makeMove function
-
-    // ...
-  } catch (error) {
-    res.status(500).json({ message: "An error occurred while generating the move" });
-  }
-};
-export const getMove = async (req: Request, res: Response): Promise<void> => {
-  const currentPosition = req.body.position;
-  const chess = new Chess(currentPosition);
-
-  try {
-    const { move, promotionPiece } = await makeMove(currentPosition);
+    const { move, promotionPiece, chainOfThought } = await makeMove(currentPosition, difficulty);
 
     const moveResult = chess.move(move, { promotion: promotionPiece });
 
