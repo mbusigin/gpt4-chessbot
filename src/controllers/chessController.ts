@@ -2,9 +2,15 @@ import { Chess } from 'chess.js';
 import { Request, Response } from 'express';
 import { ChatGPTAPI } from 'chatgpt';
 
+const key: string = (() => {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY environment variable is not set');
+  }
+  return process.env.OPENAI_API_KEY;
+})();
 // Initialize the GPT-4 API with your API key
 const gpt4Api = new ChatGPTAPI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: key,
   completionParams: {
     model: 'gpt-4',
     temperature: 0.5,
