@@ -8,7 +8,7 @@ const chess = new Chess();
 const config = {
   // position: 'start',
   sprite: {
-    url: '/node_modules/cm-chessboard/assets/pieces/standard.svg',
+    url: '/assets/pieces/standard.svg',
   },
   responsive: true,
   animationDuration: 300,
